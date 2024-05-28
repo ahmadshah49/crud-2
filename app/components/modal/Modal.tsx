@@ -4,8 +4,15 @@ import InputModal from "./InputModal";
 interface ModalProps {
   title: string;
   isUpdate?: boolean;
+  products?: {
+    id: string;
+    title: string;
+    descrition: string;
+    price: number;
+  };
 }
-const Modal: React.FC<ModalProps> = ({ title, isUpdate }) => {
+
+const Modal: React.FC<ModalProps> = ({ title, isUpdate, products }) => {
   const [modelOpen, setModelOpen] = useState(false);
   const openModal = () => {
     setModelOpen(true);
@@ -22,7 +29,12 @@ const Modal: React.FC<ModalProps> = ({ title, isUpdate }) => {
         {title}
       </button>
       {modelOpen && (
-        <InputModal isUpdate={isUpdate} title={title} onClose={closeModal} />
+        <InputModal
+          products={products}
+          isUpdate={isUpdate}
+          title={title}
+          onClose={closeModal}
+        />
       )}
     </div>
   );

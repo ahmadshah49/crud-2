@@ -1,3 +1,4 @@
+import Button from "./components/Button";
 import Modal from "./components/modal/Modal";
 import { prisma } from "./config/prisma";
 
@@ -10,7 +11,6 @@ import { prisma } from "./config/prisma";
 const fetchProducts = async () => {
   try {
     const allProducts = await prisma.products.findMany();
-    console.log(allProducts);
     return allProducts;
   } catch (error) {
     console.log("error while fetching products", error);
@@ -43,19 +43,26 @@ export default async function Home() {
               className="border-b border-gray-200 hover:bg-gray-100"
             >
               <td className="py-3 px-6 text-left whitespace-nowrap ">
-                {item.id}
+                {item.id.slice(0, 5)}...
               </td>
               <td className="py-3 px-6 text-left ">{item.title}</td>
               <td className="py-3 px-6 text-left ">{item.description}</td>
-              <td className="py-3 px-6 text-left ">{item.price}</td>
+              <td className="py-3 px-6 text-left ">{item.price} Rs</td>
               <td className="py-3 px-6 text-left ">
-                <Modal isUpdate={true} title="Update" />
+                <Modal
+                  products={{
+                    id: item.id,
+                    title: item.title,
+                    descrition: item.description,
+                    price: item.price,
+                  }}
+                  isUpdate={true}
+                  title="Update"
+                />
               </td>
 
               <td className="py-3 px-6 text-left ">
-                <button className="bg-red-500 hover:bg-red-600 transition-all text-white px-3 py-1 rounded">
-                  Delete
-                </button>
+                <Button id={item.id} />
               </td>
             </tr>
           ))}

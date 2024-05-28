@@ -5,14 +5,28 @@ interface ModalProps {
   onClose: () => void;
   title: String;
   isUpdate?: boolean;
+  products?: {
+    id: string;
+    title: string;
+    descrition: string;
+    price: number;
+  };
 }
-const InputModal: React.FC<ModalProps> = ({ onClose, title, isUpdate }) => {
+const InputModal: React.FC<ModalProps> = ({
+  onClose,
+  title,
+  isUpdate,
+  products,
+}) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    price: 0,
+    title: products?.title || "",
+    description: products?.descrition || "",
+    price: products?.price || 0,
   });
+
+  // HANDLE CHANGE FUNCTION
+
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -22,6 +36,9 @@ const InputModal: React.FC<ModalProps> = ({ onClose, title, isUpdate }) => {
       [name]: name === "price" ? parseInt(value, 10) : value,
     }));
   };
+
+  // POST API
+
   const postProductApi = async () => {
     try {
       if (!formData.title || !formData.description || !formData.price) {
@@ -57,9 +74,43 @@ const InputModal: React.FC<ModalProps> = ({ onClose, title, isUpdate }) => {
       setLoading(false);
     }
   };
+
+  // PRODUCTS UPDATE API
+
+  const updateProductApi = async () => {
+    try {
+      setLoading(true);
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      const raw = JSON.stringify({
+        id: products?.id,
+        ...formData
+      });
+
+      const requestOptions: RequestInit = {
+        method: "PUT",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow",
+      };
+
+      await fetch("http://localhost:3000/api", requestOptions);
+      alert("Products Updated");
+      onClose();
+    } catch (error) {
+      console.log("Error While Updating Products", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // FUNCTION
+
   const HandleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isUpdate) {
+      updateProductApi();
     } else {
       postProductApi();
     }
@@ -121,7 +172,7 @@ const InputModal: React.FC<ModalProps> = ({ onClose, title, isUpdate }) => {
                 className="
                 outline-none
                 px-2
-                rounded-md
+                rounded-md 
                 py-[2px]
                 focus:ring-1
                 ring-inset
